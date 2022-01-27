@@ -1,0 +1,534 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0",
+    "title": "user managment rest api",
+    "description": "rest api where you can get,add, login and change user info"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/users"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "description": "You can get all users from database",
+        "security": [],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "limit returned records",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "description": "skip records in database",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "all users from db",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getUsers"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error occured during getting users data"
+          }
+        }
+      }
+    },
+    "/{nickname}": {
+      "get": {
+        "description": "get concrete",
+        "security": [],
+        "parameters": [
+          {
+            "name": "nickname",
+            "in": "path",
+            "description": "get user by nickname",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getUser"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error occured during getting users data"
+          }
+        }
+      }
+    },
+    "/signup": {
+      "post": {
+        "security": [],
+        "description": "you can add new user to database",
+        "responses": {
+          "201": {
+            "description": "user added sucessesfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/createdUserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "some parameter is wrong",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/creationError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createUser"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "security": [],
+        "description": "after sucessesfull login user gets token, login is performed with nickname and password",
+        "responses": {
+          "200": {
+            "description": "sucessesfull login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/loginSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "if failed to login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/loginSchema"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nickname": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/update": {
+      "put": {
+        "description": "you can change user information; name, surname and password",
+        "security": [
+          {
+            "bearerAuth": ["bearer"]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "values changed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getUser"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "if user is not authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/loginSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "if user has not right role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getUser"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "nickname",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "surname": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/delete/{nickname}": {
+      "delete": {
+        "description": "it is possible to delete user by nickname, to perform this operation, user must be authorized",
+        "security": [
+          {
+            "bearerAuth": ["bearer"]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "procedure finished with no error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "deleted": {
+                      "type": "integer",
+                      "default": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "if user is not authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/loginSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "if user has not right role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/loginSchema"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "nickname",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ]
+      }
+    },
+    "/ratings": {
+      "put": {
+        "description": "Only registered user can vote. Vote can positive (+1) and negative (-1). User can change or withdraw vote, but can not vote twice for the same profile. User can not vote for him self. User can vote one time per hour. if withdraw be true, user vote will be withdrawn.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/voteSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "your vote has been submited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/votesResponseSchema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/votesResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/votesResponseSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "getUser": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "default": "user"
+          },
+          "rating": {
+            "type": "integer",
+            "default": 0
+          },
+          "votes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "voter": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "lastVoted": {
+            "type": "number",
+            "default": 0
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "default": false
+          },
+          "deletedAt": {
+            "type": "string",
+            "format": "date",
+            "default": null
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date"
+          },
+          "__V": {
+            "type": "integer",
+            "default": 0
+          },
+          "avatar": {
+            "type": "string",
+            "format": "url",
+            "default": "undefined"
+          }
+        }
+      },
+      "getUsers": {
+        "type": "array",
+        "items": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/getUser"
+            }
+          ]
+        }
+      },
+      "createUser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "default": "user"
+          }
+        }
+      },
+      "voteSchema": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "string"
+          },
+          "value": {
+            "type": "integer",
+            "default": 1
+          },
+          "withdraw": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "votesResponseSchema": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "statusCode": {
+            "type": "integer"
+          }
+        }
+      },
+      "createdUserResponse": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/getUser"
+          }
+        ],
+        "properties": {
+          "password": {
+            "type": "string"
+          },
+          "salt": {
+            "type": "string"
+          }
+        }
+      },
+      "creationError": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "default": 400
+          },
+          "message": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "error": {
+            "type": "string",
+            "default": "Bad Request"
+          }
+        }
+      },
+      "loginSchema": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/votesResponseSchema"
+          }
+        ]
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}
