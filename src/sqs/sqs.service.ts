@@ -1,6 +1,7 @@
-import { Injectable, OnModuleInit } from '@nestjs/common'
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
 import { SQS } from 'aws-sdk'
 import { InjectAwsService } from 'nest-aws-sdk'
+import { clearInterval } from 'timers'
 import { UsersService } from '../users/core/users.service'
 
 @Injectable()
@@ -15,11 +16,10 @@ export class SqsService implements OnModuleInit {
       .receiveMessage({
         MaxNumberOfMessages: 10,
         VisibilityTimeout: 10,
-        WaitTimeSeconds: 1,
+        WaitTimeSeconds: 5,
         QueueUrl: process.env.SQS_URL,
       })
       .promise()
-
     if (response.Messages) {
       response.Messages.map(async (message) => {
         const body = JSON.parse(message.Body)
@@ -40,7 +40,6 @@ export class SqsService implements OnModuleInit {
   onModuleInit() {
     setInterval(() => {
       this.messageHandler()
-    }),
-      5000
+    }, 5000)
   }
 }
