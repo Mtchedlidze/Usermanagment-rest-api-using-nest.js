@@ -24,9 +24,12 @@ import { User } from '../interface/user.interface'
 import { AuthService } from '../../auth/auth.service'
 import { VoteDto } from '../dto/votes.dto'
 import { NotVoteException } from '../exceptions/NotVote.exception'
-import { JwtAuthGuard } from '../../auth/jwt-auth.guard'
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard'
 import { UptadeUserDto } from '../dto/updateUser.dto'
 import { HashPassword } from '../../utils/hash'
+import { Roles } from 'src/auth/decorators/roles.decorator'
+import { Role } from 'src/auth/user.role'
+import { RolesGuard } from 'src/auth/guards/roles.guard'
 
 @Controller('users')
 export class UsersController {
@@ -114,15 +117,13 @@ export class UsersController {
 
   //#region update user
   @Put('/update')
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async updateOne(
     @Body() body: UptadeUserDto,
     @Request() req,
     @Query() query
   ): Promise<User> {
-    if (req.user.role !== 'admin') {
-      throw new ForbiddenException()
-    }
     const { nickname } = query.nickname ? query : req.user //since admin has ability to modify others, also he/she can modify him/herself
     const userToModify = await this.usersService.findOne(nickname)
 
@@ -155,15 +156,9 @@ export class UsersController {
 
   //#region  delete one
   @Delete('/delete/:nickname')
-  @UseGuards(JwtAuthGuard)
-  deleteOne(
-    @Request() req: { user: { nickname: string; role: string } },
-    @Param('nickname') nickname: string
-  ): Promise<{ deleted: number }> {
-    const { role } = req.user
-    if (role !== 'admin') {
-      throw new ForbiddenException()
-    }
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  deleteOne(@Param('nickname') nickname: string): Promise<{ deleted: number }> {
     return this.usersService.deleteOne(nickname)
   }
   //#endregion
