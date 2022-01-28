@@ -1,7 +1,6 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
+import { Injectable, OnModuleInit } from '@nestjs/common'
 import { SQS } from 'aws-sdk'
 import { InjectAwsService } from 'nest-aws-sdk'
-import { clearInterval } from 'timers'
 import { UsersService } from '../users/core/users.service'
 
 @Injectable()

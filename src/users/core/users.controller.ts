@@ -15,7 +15,12 @@ import {
   Delete,
   ForbiddenException,
   BadRequestException,
+  Response,
+  Logger,
+  Header,
 } from '@nestjs/common'
+
+import { Response as Res, Request as Req } from 'express'
 import { CreateUserDto } from '../dto/createUser.dto'
 import { LoginDto } from '../dto/login.dto'
 import { UsersService } from './users.service'
@@ -116,14 +121,25 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   async updateOne(
     @Body() body: UptadeUserDto,
-    @Request() req: { user: { nickname: string; role: string } },
+    @Request() req,
     @Query() query
-  ): Promise<User> {
+  ): Promise<any> {
     if (req.user.role !== 'admin') {
       throw new ForbiddenException()
     }
-
     const { nickname } = query.nickname ? query : req.user //since admin has ability to modify others, also he/she can modify him/herself
+    const userToModify = await this.usersService.findOne(nickname)
+
+    req.res.setHeader('last-modified', userToModify.updatedAt)
+    if (
+      req.headers['if-unmodified-since'] &&
+      req.headers['if-unmodified-since'] !== userToModify.updatedAt
+    ) {
+      throw new HttpException(
+        'The resource has been modified since the last request.',
+        HttpStatus.PRECONDITION_FAILED
+      )
+    }
 
     if (body.password) {
       const secrets = await this.hashPassword.hash(body.password)
@@ -133,7 +149,7 @@ export class UsersController {
 
     const updatedUser = this.usersService
       .updateOne(nickname, body)
-      .catch((err) => {
+      .catch(() => {
         throw new BadRequestException()
       })
 
