@@ -15,6 +15,7 @@ import {
   Delete,
   ForbiddenException,
   BadRequestException,
+  UseInterceptors,
 } from '@nestjs/common'
 
 import { CreateUserDto } from '../dto/createUser.dto'
@@ -30,6 +31,7 @@ import { HashPassword } from '../../utils/hash'
 import { Roles } from 'src/auth/decorators/roles.decorator'
 import { Role } from 'src/auth/user.role'
 import { RolesGuard } from 'src/auth/guards/roles.guard'
+import { UpdateInterceptor } from '../interceptors/update.interceptor'
 
 @Controller('users')
 export class UsersController {
@@ -119,6 +121,7 @@ export class UsersController {
   @Put('/update')
   @Roles(Role.Admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseInterceptors(UpdateInterceptor)
   async updateOne(
     @Body() body: UptadeUserDto,
     @Request() req,
