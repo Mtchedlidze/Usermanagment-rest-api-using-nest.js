@@ -3,9 +3,9 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { UsersController } from './users.controller'
 import { UsersService } from './users.service'
 import UserSchema from '../schemas/users.schema'
-import { HashPassword } from 'src/utils/hash'
-import { AuthModule } from 'src/auth/auth.module'
-import { SqsService } from 'src/sqs/sqs.service'
+import { HashPassword } from '../../utils/hash'
+import { AuthModule } from '../../auth/auth.module'
+import { SqsService } from '../../sqs/sqs.service'
 
 @Module({
   imports: [

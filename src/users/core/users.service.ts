@@ -1,18 +1,19 @@
 import { Injectable } from '@nestjs/common'
+import { SoftDeleteModel } from 'soft-delete-plugin-mongoose'
 import { User } from '../interface/user.interface'
 import { InjectModel } from '@nestjs/mongoose'
 import { NotVoteException } from '../exceptions/NotVote.exception'
-import { SoftDeleteModel } from 'soft-delete-plugin-mongoose'
 import { CreateUserDto } from '../dto/createUser.dto'
 import { NotCreateException } from '../exceptions/NotCreate.exception'
+import { UptadeUserDto } from '../dto/updateUser.dto'
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel('User') private readonly userModel: SoftDeleteModel<User>,
+    @InjectModel('User') private readonly userModel: SoftDeleteModel<User>
   ) {}
 
   //#region  findall
-  async findAll(params?: { limit: number; skip: number }): Promise<any[]> {
+  async findAll(params?: { limit: number; skip: number }): Promise<User[]> {
     const { limit, skip } = params || null
 
     const users = await this.userModel
@@ -31,12 +32,13 @@ export class UsersService {
   //#endregion
 
   //#region  findOne
-  async findOne(nickname: string): Promise<any> {
+  async findOne(nickname: string): Promise<User> {
     const user = await this.userModel
       .findOne({ nickname: nickname })
       .select(['-password', '-salt'])
-
-    user.rating = user.votes.reduce((a, b) => a + (b['vote'] || 0), 0)
+    if (user) {
+      user.rating = user.votes.reduce((a, b) => a + (b['vote'] || 0), 0)
+    }
 
     return user
   }
@@ -54,10 +56,10 @@ export class UsersService {
   //#endregion
 
   //#region update user
-  async updateOne(nickname: string, updateObj: any): Promise<User> {
+  async updateOne(nickname: string, updateObj: UptadeUserDto): Promise<User> {
     const user = await this.userModel.findOne({ nickname })
-  
-    if(!user) {
+
+    if (!user) {
       throw new Error('user not found')
     }
     user.name = updateObj.name || user.name
@@ -72,13 +74,13 @@ export class UsersService {
   //#endregion
 
   //#region delete user
-  async deleteOne(nickname: string): Promise<any> {
+  async deleteOne(nickname: string): Promise<{ deleted: number }> {
     const user = await this.userModel.findOne({ nickname })
     console.log(user)
 
     const deleted = this.userModel.softDelete(
       { nickname: nickname },
-      { validateBeforeSave: false },
+      { validateBeforeSave: false }
     )
     return deleted
   }
@@ -99,7 +101,7 @@ export class UsersService {
     value: number
     withdraw: boolean
     user: string
-  }): Promise<any> {
+  }): Promise<string> {
     const { voter, value, user, withdraw } = params
 
     const userToVote = await this.userModel.findOne({ nickname: user })
@@ -140,7 +142,7 @@ export class UsersService {
         return `your vote has been updated to ${value}`
       }
       throw new NotVoteException(
-        'you can not vote twice to same user, you can change or withdraw your vote',
+        'you can not vote twice to same user, you can change or withdraw your vote'
       )
     }
     if (Date.now() - whovotes.lastVoted < 3600000) {

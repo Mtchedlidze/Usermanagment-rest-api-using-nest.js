@@ -15,22 +15,18 @@ import {
   Delete,
   ForbiddenException,
   BadRequestException,
-  Response,
-  Logger,
-  Header,
 } from '@nestjs/common'
 
-import { Response as Res, Request as Req } from 'express'
 import { CreateUserDto } from '../dto/createUser.dto'
 import { LoginDto } from '../dto/login.dto'
 import { UsersService } from './users.service'
 import { User } from '../interface/user.interface'
-import { HashPassword } from 'src/utils/hash'
-import { AuthService } from 'src/auth/auth.service'
+import { AuthService } from '../../auth/auth.service'
 import { VoteDto } from '../dto/votes.dto'
 import { NotVoteException } from '../exceptions/NotVote.exception'
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard'
 import { UptadeUserDto } from '../dto/updateUser.dto'
+import { HashPassword } from '../../utils/hash'
 
 @Controller('users')
 export class UsersController {
@@ -123,7 +119,7 @@ export class UsersController {
     @Body() body: UptadeUserDto,
     @Request() req,
     @Query() query
-  ): Promise<any> {
+  ): Promise<User> {
     if (req.user.role !== 'admin') {
       throw new ForbiddenException()
     }
@@ -163,7 +159,7 @@ export class UsersController {
   deleteOne(
     @Request() req: { user: { nickname: string; role: string } },
     @Param('nickname') nickname: string
-  ): Promise<User> {
+  ): Promise<{ deleted: number }> {
     const { role } = req.user
     if (role !== 'admin') {
       throw new ForbiddenException()

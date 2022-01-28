@@ -11,4 +11,5 @@ export interface User extends Document {
   salt?: string
   lastVoted?: number
   avatar?: string
+  updatedAt?: string
 }
