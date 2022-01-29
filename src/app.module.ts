@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common'
 import { MongooseModule } from '@nestjs/mongoose'
-import { UsersModule } from './users/core/users.module'
 import { ConfigModule } from '@nestjs/config'
 import { AwsSdkModule } from 'nest-aws-sdk'
 import { SQS } from 'aws-sdk'
+import { UsersModule } from './users/core/users.module'
 
 @Module({
   imports: [
@@ -13,7 +13,7 @@ import { SQS } from 'aws-sdk'
     AwsSdkModule.forRoot({
       defaultServiceOptions: {
         region: process.env.AWS_REGION,
-        credentials: {“
+        credentials: {
           accessKeyId: process.env.AWS_ID,
           secretAccessKey: process.env.AWS_SECRET,
         },
@@ -21,6 +21,5 @@ import { SQS } from 'aws-sdk'
       services: [SQS],
     }),
   ],
-  providers: [SQS],
 })
 export class AppModule {}
