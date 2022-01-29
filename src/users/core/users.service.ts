@@ -56,16 +56,16 @@ export class UsersService {
   //#endregion
 
   //#region update user
-  async updateOne(nickname: string, updateObj: UptadeUserDto): Promise<User> {
+  async updateOne(
+    nickname: string,
+    updatedObj: Partial<UptadeUserDto>
+  ): Promise<User> {
     const user = await this.userModel.findOne({ nickname })
 
     if (!user) {
       throw new Error('user not found')
     }
-    user.name = updateObj.name || user.name
-    user.surname = updateObj.surname || user.surname
-    user.password = updateObj.password || user.password
-    user.salt = updateObj.salt || user.salt
+    Object.assign(user, updatedObj)
 
     await user.save()
 
