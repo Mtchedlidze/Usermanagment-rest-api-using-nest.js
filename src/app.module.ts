@@ -4,7 +4,6 @@ import { UsersModule } from './users/core/users.module'
 import { ConfigModule } from '@nestjs/config'
 import { AwsSdkModule } from 'nest-aws-sdk'
 import { SQS } from 'aws-sdk'
-import { SqsService } from './sqs/sqs.service'
 
 @Module({
   imports: [
@@ -14,7 +13,7 @@ import { SqsService } from './sqs/sqs.service'
     AwsSdkModule.forRoot({
       defaultServiceOptions: {
         region: process.env.AWS_REGION,
-        credentials: {
+        credentials: {“
           accessKeyId: process.env.AWS_ID,
           secretAccessKey: process.env.AWS_SECRET,
         },
@@ -22,6 +21,6 @@ import { SqsService } from './sqs/sqs.service'
       services: [SQS],
     }),
   ],
-  providers: [SQS, SqsService],
+  providers: [SQS],
 })
 export class AppModule {}

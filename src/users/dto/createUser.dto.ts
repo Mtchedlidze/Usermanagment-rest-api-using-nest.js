@@ -8,7 +8,6 @@ enum UserRole {
 const match = `^${Object.values(UserRole)
   .filter((v) => typeof v !== 'number')
   .join('|')}$`
-
 export class CreateUserDto {
   @IsString()
   readonly name: string
