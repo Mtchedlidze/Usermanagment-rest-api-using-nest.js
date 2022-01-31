@@ -121,11 +121,7 @@ export class UsersController {
   @Roles(Role.Admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(UpdateInterceptor)
-  async updateOne(
-    @Body() body: UptadeUserDto,
-    @Request() req,
-    @Query() query
-  ): Promise<User> {
+  async updateOne(@Body() body: UptadeUserDto, @Request() req, @Query() query) {
     const { nickname } = query.nickname ? query : req.user //since admin has ability to modify others, also he/she can modify him/herself
     if (body.password) {
       const secrets = await this.hashPassword.hash(body.password)
@@ -133,7 +129,7 @@ export class UsersController {
       body.salt = secrets.salt
     }
 
-    const updatedUser = this.usersService
+    const updatedUser = await this.usersService
       .updateOne(nickname, body)
       .catch(() => {
         throw new BadRequestException()
