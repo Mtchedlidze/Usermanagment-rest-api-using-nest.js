@@ -17,20 +17,21 @@ import {
   UseInterceptors,
 } from '@nestjs/common'
 
-import { CreateUserDto } from '../dto/createUser.dto'
-import { LoginDto } from '../dto/login.dto'
+import { CreateUserDto } from './dto/createUser.dto'
+import { LoginDto } from './dto/login.dto'
 import { UsersService } from './users.service'
-import { User } from '../interface/user.interface'
-import { AuthService } from '../../auth/auth.service'
-import { VoteDto } from '../dto/votes.dto'
-import { NotVoteException } from '../exceptions/NotVote.exception'
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard'
-import { UptadeUserDto } from '../dto/updateUser.dto'
-import { HashPassword } from '../../utils/hash'
-import { Roles } from 'src/auth/decorators/roles.decorator'
-import { Role } from 'src/auth/user.role'
-import { RolesGuard } from 'src/auth/guards/roles.guard'
-import { UpdateInterceptor } from '../interceptors/update.interceptor'
+import { User } from './interface/user.interface'
+import { AuthService } from '../auth/auth.service'
+import { VoteDto } from './dto/votes.dto'
+import { NotVoteException } from './exceptions/NotVote.exception'
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import { UptadeUserDto } from './dto/updateUser.dto'
+import { HashPassword } from '../utils/hash'
+import { Roles } from '../auth/decorators/roles.decorator'
+import { Role } from '../auth/user.role'
+import { RolesGuard } from '../auth/guards/roles.guard'
+import { UpdateInterceptor } from './interceptors/update.interceptor'
+import { UpdateGuard } from './guards/update.guard'
 
 @Controller('users')
 export class UsersController {
@@ -119,8 +120,8 @@ export class UsersController {
   //#region update user
   @Put('/update')
   @Roles(Role.Admin)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @UseInterceptors(UpdateInterceptor)
+  @UseGuards(JwtAuthGuard, RolesGuard, UpdateGuard)
+  @UseInterceptors(new UpdateInterceptor())
   async updateOne(@Body() body: UptadeUserDto, @Request() req, @Query() query) {
     const { nickname } = query.nickname ? query : req.user //since admin has ability to modify others, also he/she can modify him/herself
     if (body.password) {

@@ -10,6 +10,9 @@ export interface User extends Document {
   role?: string
   salt?: string
   lastVoted?: number
+  isDeleted?: boolean
   avatar?: string
   updatedAt?: string
+  deletedAt?: boolean
+  createdAt?: string
 }

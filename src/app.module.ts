@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { ConfigModule } from '@nestjs/config'
 import { AwsSdkModule } from 'nest-aws-sdk'
 import { SQS } from 'aws-sdk'
-import { UsersModule } from './users/core/users.module'
+import { UsersModule } from './users/users.module'
 
 @Module({
   imports: [

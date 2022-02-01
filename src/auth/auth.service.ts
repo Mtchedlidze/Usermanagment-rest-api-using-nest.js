@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { UsersService } from '../users/core/users.service'
+import { UsersService } from '../users/users.service'
 import { HashPassword } from '../utils/hash'
 
 @Injectable()

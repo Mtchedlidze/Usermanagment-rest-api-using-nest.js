@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common'
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose'
-import { User } from '../interface/user.interface'
+import { User } from './interface/user.interface'
 import { InjectModel } from '@nestjs/mongoose'
-import { NotVoteException } from '../exceptions/NotVote.exception'
-import { CreateUserDto } from '../dto/createUser.dto'
-import { NotCreateException } from '../exceptions/NotCreate.exception'
-import { UptadeUserDto } from '../dto/updateUser.dto'
+import { NotVoteException } from './exceptions/NotVote.exception'
+import { CreateUserDto } from './dto/createUser.dto'
+import { NotCreateException } from './exceptions/NotCreate.exception'
+import { UptadeUserDto } from './dto/updateUser.dto'
 @Injectable()
 export class UsersService {
   constructor(

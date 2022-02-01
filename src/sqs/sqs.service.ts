@@ -1,7 +1,7 @@
 import { OnModuleInit } from '@nestjs/common'
 import { SQS } from 'aws-sdk'
 import { InjectAwsService } from 'nest-aws-sdk'
-import { UsersService } from '../users/core/users.service'
+import { UsersService } from '../users/users.service'
 
 export class SqsService implements OnModuleInit {
   constructor(
