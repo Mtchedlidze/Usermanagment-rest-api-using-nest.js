@@ -5,7 +5,6 @@ import {
   Param,
   Body,
   Post,
-  UnauthorizedException,
   HttpException,
   HttpStatus,
   HttpCode,
@@ -18,10 +17,8 @@ import {
 } from '@nestjs/common'
 
 import { CreateUserDto } from './dto/createUser.dto'
-import { LoginDto } from './dto/login.dto'
 import { UsersService } from './users.service'
 import { User } from './interface/user.interface'
-import { AuthService } from '../auth/auth.service'
 import { VoteDto } from './dto/votes.dto'
 import { NotVoteException } from './exceptions/NotVote.exception'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
@@ -32,16 +29,14 @@ import { Role } from '../auth/user.role'
 import { RolesGuard } from '../auth/guards/roles.guard'
 import { UpdateInterceptor } from './interceptors/update.interceptor'
 import { UpdateGuard } from './guards/update.guard'
-import { AuthGuard } from '@nestjs/passport'
-import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard'
+import { LocalAuthGuard } from '../auth/guards/local-auth.guard'
 
 @Controller('users')
 export class UsersController {
   //#region constructor
   constructor(
     private readonly usersService: UsersService,
-    private readonly hashPassword: HashPassword,
-    private readonly auth: AuthService
+    private readonly hashPassword: HashPassword
   ) {}
   //#endregion
 

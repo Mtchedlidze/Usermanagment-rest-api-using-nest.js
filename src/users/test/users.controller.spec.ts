@@ -63,6 +63,10 @@ describe('userscontroller', () => {
       beforeEach(async () => {
         await userscontroller.deleteOne(userStub().nickname)
       })
+
+      test('it should call userservice deleteOne', () => {
+        expect(usersService.deleteOne).toBeCalledWith(userStub().nickname)
+      })
     })
   })
 })
