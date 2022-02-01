@@ -6,6 +6,7 @@ import { HashPassword } from '../utils/hash'
 import { AuthService } from './auth.service'
 import { RolesGuard } from './guards/roles.guard'
 import { JwtStrategy } from './jwt.stategy'
+import { LocalStrategy } from './local.strategy'
 
 @Module({
   imports: [
@@ -14,7 +15,13 @@ import { JwtStrategy } from './jwt.stategy'
     PassportModule,
   ],
 
-  providers: [AuthService, HashPassword, JwtStrategy, RolesGuard],
+  providers: [
+    AuthService,
+    HashPassword,
+    JwtStrategy,
+    RolesGuard,
+    LocalStrategy,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

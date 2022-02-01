@@ -1,6 +1,4 @@
-import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
-import { AuthModule } from '../../auth/auth.module'
 import { AuthService } from '../../auth/auth.service'
 import { HashPassword } from '../../utils/hash'
 import { UsersController } from '../users.controller'
@@ -37,13 +35,33 @@ describe('userscontroller', () => {
     jest.clearAllMocks()
   })
 
-  describe('findAll', () => {
+  describe('findOne', () => {
     describe('when findOne is called', () => {
       beforeEach(async () => {
         const user = await userscontroller.findOne(userStub().nickname)
       })
       test('it should call userSservice', () => {
         expect(usersService.findOne).toBeCalledWith(userStub().nickname)
+      })
+    })
+  })
+
+  describe('findAll', () => {
+    describe('when findAll called', () => {
+      beforeEach(async () => {
+        await userscontroller.findAll(2, null)
+      })
+
+      test('it should call usersservice', () => {
+        expect(usersService.findAll).toBeCalledWith({ limit: 2, skip: null })
+      })
+    })
+  })
+
+  describe('deleteOne', () => {
+    describe('when deleteOne called', () => {
+      beforeEach(async () => {
+        await userscontroller.deleteOne(userStub().nickname)
       })
     })
   })

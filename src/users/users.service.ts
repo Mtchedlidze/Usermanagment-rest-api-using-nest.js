@@ -69,15 +69,12 @@ export class UsersService {
 
     await user.save()
 
-    return await this.findOne(nickname)
+    return this.findOne(nickname)
   }
   //#endregion
 
   //#region delete user
   async deleteOne(nickname: string): Promise<{ deleted: number }> {
-    const user = await this.userModel.findOne({ nickname })
-    console.log(user)
-
     const deleted = this.userModel.softDelete(
       { nickname: nickname },
       { validateBeforeSave: false }
@@ -89,7 +86,7 @@ export class UsersService {
 
   //#region  findUser
   async findUser(nickname: string): Promise<User> {
-    return await this.userModel.findOne({ nickname })
+    return this.userModel.findOne({ nickname })
   }
 
   //#endregion

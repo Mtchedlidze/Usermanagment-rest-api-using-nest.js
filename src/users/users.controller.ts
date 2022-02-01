@@ -32,6 +32,8 @@ import { Role } from '../auth/user.role'
 import { RolesGuard } from '../auth/guards/roles.guard'
 import { UpdateInterceptor } from './interceptors/update.interceptor'
 import { UpdateGuard } from './guards/update.guard'
+import { AuthGuard } from '@nestjs/passport'
+import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard'
 
 @Controller('users')
 export class UsersController {
@@ -80,14 +82,10 @@ export class UsersController {
 
   //#region  login
   @Post('/login')
-  async login(@Body() body: LoginDto): Promise<User> {
-    const { nickname, password } = body
-    const token = await this.auth.validate(nickname, password)
-    if (!token) {
-      throw new UnauthorizedException()
-    }
-
-    throw new HttpException(token, 200)
+  @HttpCode(200)
+  @UseGuards(LocalAuthGuard)
+  async login(@Request() req): Promise<string> {
+    return req.user
   }
   //#endregion
 
