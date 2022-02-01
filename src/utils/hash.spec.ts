@@ -17,7 +17,6 @@ describe('hash password with salt', () => {
     let salt, password
     beforeEach(async () => {
       const secrets = await hashPassword.hash(pass)
-      console.log(secrets)
       salt = secrets.salt
       password = secrets.password
     })
