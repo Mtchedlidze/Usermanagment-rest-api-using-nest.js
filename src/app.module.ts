@@ -24,8 +24,4 @@ import { UsersModule } from './users/users.module'
     }),
   ],
 })
-export class AppModule {
-  constructor() {
-    console.log(process.env.TEST)
-  }
-}
+export class AppModule {}
