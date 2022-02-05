@@ -18,3 +18,13 @@ export const userStub = (): Partial<User> => {
     avatar: 'https://usersmanagment.s3.eu-central-1.amazonaws.com/string',
   }
 }
+
+export const createUserStub = (): Partial<User> => {
+  return {
+    name: 'testName',
+    surname: 'testSurname',
+    nickname: 'testNickname',
+    password: 'testPassword',
+    role: 'admin',
+  }
+}

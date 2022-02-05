@@ -18,4 +18,6 @@ export class VoteDto {
   value: number
   @IsBoolean()
   withdraw: boolean
+  @IsOptional()
+  voter: string
 }

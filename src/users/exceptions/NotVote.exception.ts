@@ -1,7 +1,7 @@
 export class NotVoteException {
   constructor(readonly message: string) {}
 
-  throw() {
+  private throw() {
     return this.message
   }
 }
