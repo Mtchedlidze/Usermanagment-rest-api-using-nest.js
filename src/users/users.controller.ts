@@ -92,8 +92,7 @@ export class UsersController {
     @Body() body: VoteDto,
     @Request() req: { user: { nickname: string; role: string } }
   ): Promise<{ statusCode: number; message: string }> {
-   
-    body.voter=req.user.nickname
+    body.voter = req.user.nickname
     try {
       const response = await this.usersService.ratings(body)
       return {

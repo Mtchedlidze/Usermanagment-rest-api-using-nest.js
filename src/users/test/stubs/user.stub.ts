@@ -9,13 +9,3 @@ export const userStub = (): Partial<User> => {
     role: 'admin',
   }
 }
-
-export const createUserStub = (): Partial<User> => {
-  return {
-    name: 'testName',
-    surname: 'testSurname',
-    nickname: 'testNickname',
-    password: 'testPassword',
-    role: 'admin',
-  }
-}

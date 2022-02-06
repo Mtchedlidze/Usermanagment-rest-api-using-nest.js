@@ -3,9 +3,8 @@ import { AppModule } from '../src/app.module'
 import request from 'supertest'
 import { Test, TestingModule } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
-import { createUserStub, userStub } from '../src/users/test/stubs/user.stub'
+import { userStub } from '../src/users/test/stubs/user.stub'
 
-// jest.useFakeTimers('modern')
 jest.setTimeout(30000)
 
 describe('users', () => {
@@ -22,8 +21,11 @@ describe('users', () => {
   it('should create new user', () => {
     return request(app.getHttpServer())
       .post('/users/signup')
-      .send(createUserStub())
+      .send(userStub())
       .expect(201)
+      .then((data) => {
+        expect(data.body.nickname).toStrictEqual(userStub().nickname)
+      })
   })
 
   it('should return token', () => {
@@ -36,7 +38,6 @@ describe('users', () => {
       .expect(200)
       .then((data) => {
         token = 'Bearer ' + data.text
-        expect(data.body).toBeDefined()
       })
   })
 
@@ -48,17 +49,39 @@ describe('users', () => {
         expect(data.body.nickname).toStrictEqual(userStub().nickname)
       })
   })
+
+  it('should return array of users', () => {
+    return request(app.getHttpServer())
+      .get('/users')
+      .expect(200)
+      .then((data) => {
+        expect(data.body).toHaveLength(1)
+      })
+  })
+
   it('should update user', () => {
     return request(app.getHttpServer())
       .put('/users/update')
       .send({ name: 'newName' })
       .set('Authorization', token)
       .expect(200)
-      .then((data) => {})
+      .then((data) => {
+        expect(data.body.name).toStrictEqual('newName')
+      })
   })
+
+  it('should  not update user without authorization', () => {
+    return request(app.getHttpServer())
+      .put('/users/update')
+      .send({ name: 'newName' })
+      .expect(401)
+  })
+
   it('should delete user with nickname', () => {
     return request(app.getHttpServer())
-      .delete(`/users/${userStub().nickname}`)
+      .delete(`/users/delete/${userStub().nickname}`)
+      .set('Authorization', token)
+      .expect(200)
       .then((data) => {
         expect(data.body.deleted).toStrictEqual(1)
       })
