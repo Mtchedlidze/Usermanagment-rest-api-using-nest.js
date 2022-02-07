@@ -68,7 +68,7 @@ describe('users', () => {
     expect(data.body.name).toStrictEqual('newName')
   })
 
-  it('should  not update user without authorization', () => {
+  it('should  not update user without authorization', async () => {
     return request(app.getHttpServer())
       .put('/users/update')
       .send({ name: 'newName' })
