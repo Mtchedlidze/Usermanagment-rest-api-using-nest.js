@@ -10,7 +10,6 @@ jest.setTimeout(30000)
 
 describe('users', () => {
   let app: INestApplication
-  let token: string
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -19,23 +18,23 @@ describe('users', () => {
     app = module.createNestApplication()
     await app.init()
   }, 30000)
+
   it('should create new user', async () => {
-    const data_1 = await request(app.getHttpServer())
+    const data = await request(app.getHttpServer())
       .post('/users/signup')
       .send(userStub())
       .expect(201)
-    expect(data_1.body.nickname).toStrictEqual(userStub().nickname)
+    expect(data.body.nickname).toStrictEqual(userStub().nickname)
   })
 
   it('should return token', async () => {
-    const data_1 = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post('/users/login')
       .send({
         nickname: userStub().nickname,
         password: userStub().password,
       })
       .expect(200)
-    token = 'Bearer ' + data_1.text
   })
 
   it('should find user with nickname', async () => {
@@ -51,6 +50,16 @@ describe('users', () => {
   })
 
   it('should update user', async () => {
+    const loginData = await request(app.getHttpServer())
+      .post('/users/login')
+      .send({
+        nickname: userStub().nickname,
+        password: userStub().password,
+      })
+      .expect(200)
+
+    const token = 'Bearer ' + loginData.text
+
     const data = await request(app.getHttpServer())
       .put('/users/update')
       .send({ name: 'newName' })
@@ -67,6 +76,16 @@ describe('users', () => {
   })
 
   it('should delete user with nickname', async () => {
+    const loginData = await request(app.getHttpServer())
+      .post('/users/login')
+      .send({
+        nickname: userStub().nickname,
+        password: userStub().password,
+      })
+      .expect(200)
+
+    const token = 'Bearer ' + loginData.text
+
     const data = await request(app.getHttpServer())
       .delete(`/users/delete/${userStub().nickname}`)
       .set('Authorization', token)
