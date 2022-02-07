@@ -4,6 +4,7 @@ import request from 'supertest'
 import { Test, TestingModule } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
 import { userStub } from '../src/users/test/stubs/user.stub'
+import mongoose from 'mongoose'
 
 jest.setTimeout(30000)
 
@@ -18,56 +19,44 @@ describe('users', () => {
     app = module.createNestApplication()
     await app.init()
   }, 30000)
-  it('should create new user', () => {
-    return request(app.getHttpServer())
+  it('should create new user', async () => {
+    const data_1 = await request(app.getHttpServer())
       .post('/users/signup')
       .send(userStub())
       .expect(201)
-      .then((data) => {
-        expect(data.body.nickname).toStrictEqual(userStub().nickname)
-      })
+    expect(data_1.body.nickname).toStrictEqual(userStub().nickname)
   })
 
-  it('should return token', () => {
-    return request(app.getHttpServer())
+  it('should return token', async () => {
+    const data_1 = await request(app.getHttpServer())
       .post('/users/login')
       .send({
         nickname: userStub().nickname,
         password: userStub().password,
       })
       .expect(200)
-      .then((data) => {
-        token = 'Bearer ' + data.text
-      })
+    token = 'Bearer ' + data_1.text
   })
 
-  it('should find user with nickname', () => {
-    return request(app.getHttpServer())
+  it('should find user with nickname', async () => {
+    const data = await request(app.getHttpServer())
       .get(`/users/${userStub().nickname}`)
       .expect(200)
-      .then((data) => {
-        expect(data.body.nickname).toStrictEqual(userStub().nickname)
-      })
+    expect(data.body.nickname).toStrictEqual(userStub().nickname)
   })
 
-  it('should return array of users', () => {
-    return request(app.getHttpServer())
-      .get('/users')
-      .expect(200)
-      .then((data) => {
-        expect(data.body).toHaveLength(1)
-      })
+  it('should return array of users', async () => {
+    const data = await request(app.getHttpServer()).get('/users').expect(200)
+    expect(data.body).toHaveLength(1)
   })
 
-  it('should update user', () => {
-    return request(app.getHttpServer())
+  it('should update user', async () => {
+    const data = await request(app.getHttpServer())
       .put('/users/update')
       .send({ name: 'newName' })
       .set('Authorization', token)
       .expect(200)
-      .then((data) => {
-        expect(data.body.name).toStrictEqual('newName')
-      })
+    expect(data.body.name).toStrictEqual('newName')
   })
 
   it('should  not update user without authorization', () => {
@@ -77,17 +66,16 @@ describe('users', () => {
       .expect(401)
   })
 
-  it('should delete user with nickname', () => {
-    return request(app.getHttpServer())
+  it('should delete user with nickname', async () => {
+    const data = await request(app.getHttpServer())
       .delete(`/users/delete/${userStub().nickname}`)
       .set('Authorization', token)
       .expect(200)
-      .then((data) => {
-        expect(data.body.deleted).toStrictEqual(1)
-      })
+    expect(data.body.deleted).toStrictEqual(1)
   })
 
   afterAll(async () => {
+    await mongoose.connection.close()
     await app.close()
   })
 })
