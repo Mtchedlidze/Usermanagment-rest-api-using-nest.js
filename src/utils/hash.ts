@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export class HashPassword {
-  passowrd: string
-  salt: string
+  private passowrd: string
+  private salt: string
 
   async hash(
     password: string,

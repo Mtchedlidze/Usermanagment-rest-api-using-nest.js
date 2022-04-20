@@ -13,7 +13,7 @@ export class UpdateGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest()
-    const { nickname } = req.query || req.user
+    const nickname = req.query.nickname || req.user.nickname
 
     const user = await this.usersService.findOne(nickname)
 

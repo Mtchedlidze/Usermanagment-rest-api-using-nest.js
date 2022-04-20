@@ -38,7 +38,7 @@ describe('userscontroller', () => {
   describe('findOne', () => {
     describe('when findOne is called', () => {
       beforeEach(async () => {
-        const user = await userscontroller.findOne(userStub().nickname)
+        await userscontroller.findOne(userStub().nickname)
       })
       test('it should call userSservice', () => {
         expect(usersService.findOne).toBeCalledWith(userStub().nickname)

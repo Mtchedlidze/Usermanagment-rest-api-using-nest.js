@@ -9,7 +9,9 @@ import { UsersModule } from './users/users.module'
   imports: [
     ConfigModule.forRoot(),
     UsersModule,
-    MongooseModule.forRoot(process.env.DB_URI),
+    MongooseModule.forRoot(
+      process.env.TEST === 'true' ? process.env.TEST_DB_URI : process.env.DB_URI
+    ),
     AwsSdkModule.forRoot({
       defaultServiceOptions: {
         region: process.env.AWS_REGION,
